@@ -1,0 +1,165 @@
+<html>
+<head>
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <title>Home</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="This webpage displays the locations of earthquakes around the world on a map">
+  <meta name="keywords" content="Google map, earthquake, location, place, date, time">
+  <meta http-equiv="author" content="Hesham Eltobgy">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+
+  @media only screen and  (max-width: 600px) {
+    #title p {
+      font-size: 14px;
+    }
+    #info p {
+      font-size: 11px;
+    }
+    #title i {
+      font-size: 24px!important;
+    }
+
+
+
+
+
+    }
+
+    body {
+         font-family: Gotham,gotham,Verdana,sans-serif;
+         background:#00004d;
+         height: 100%;
+        
+     }    
+    
+    header, footer {
+         text-align: center;
+         color: #e6f2ff;
+     }
+     footer {
+         margin-bottom: 0;
+         clear: both;
+     }
+     #page {
+      max-width: 100%;
+     }
+
+     #map {
+        width: 60%;
+        border: 1px solid #e6f2ff;        
+        border-radius: 5px;
+        float: left;
+       margin-left: auto;
+       margin-right: auto;
+        margin-bottom: 35px;
+        height: 650px;
+     }
+
+ #mapinfo {
+  float: left;
+  width: 38%;
+  color: #e6f2ff;
+  
+}
+#title i {
+      font-size: 30px;
+    color: #e6f2ff;
+}
+
+#info, #title {
+  text-align: center;
+}
+
+</style>    
+</head>
+<body>
+  <header id="site-header" class="header">
+    <h2>Earthquake Information</h2>
+    <h4>This map displays the locations of earthquakes around the world</h4>
+  </header><!--header--> 
+   <div id="page">
+    <div id="map"></div>
+   <div id="mapinfo"> 
+    <div id="title"><p>The details of the earthquake will be displayed below</p>
+      <i class="fa fa-hand-o-down"></i>
+    </div>
+     <div id="info"><p></p></div>
+   </div>
+    </div>
+  
+  <footer>
+    <div id="end">
+    </div>     
+     
+</footer><!--footer-->
+
+<!-- Insert your own API Key after the key parameter. -->
+<script async defer  type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyDib_xISib5ZVkmyvSFV1SLrdVxwzz9O4I&callback=initMap"></script>
+
+<script>
+// Create a function to declare map, assign #map to it and define the map properties.
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+  zoom: 3,
+  center: new google.maps.LatLng(37, -15.0),
+  mapTypeId: 'terrain'
+  });
+
+ // Integrating the variable map with an API to display all the earthquakes in the past 24 hours. 
+ map.data.loadGeoJson('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson');
+
+  map.data.addListener('click', function(event) {
+    var place = event.feature.getProperty('place'); // Assigning the variable place to the actual place of all earthquakes 
+    var lat = event.latLng.lat(); // Assigning the variable lat to the latitude of the earthquakes
+    var lng = event.latLng.lng(); //  Assigning the variable lat to the longitude of the earthquakes
+    var time = event.feature.getProperty("time"); // Assigning the variable time to the date and time of each earthquake
+    var timeFull = new Date(time); // Convert the format of the date and time of the earthquakes into date format
+    var timeForm = timeFull.toUTCString(); // Convert the Date object to a string, according to universal time
+  
+    // Create the content that will be popped up if the user taps on the annotations that represent the locations of the earthquakes
+    console.log(event.feature.getProperty('place'));
+    var infowindow = new google.maps.InfoWindow({
+      content: "Place-->   " + place + "<br>" + "Location-->   " + "Latitude= " + lat + " / " + "Longitude= " + lng + "<br>" + "Date/Time-->  " + timeForm
+    });
+    /*var convertLat = Math.abs(lat);
+        var LatDeg = Math.floor(convertLat);
+           var convertLng = Math.abs(lng);
+        var LngDeg = Math.floor(convertLng);*/
+      
+    document.querySelector('#info p').innerHTML = "Place--> " + place + "<br>" + "Location--> " + "Latitude = " + lat + " / " + "Longitude = " + lng + "<br>" + "Date/Time--> " + timeForm;
+  });
+}
+
+
+     
+
+// Create the annotations and identify their locations in the map according to the earthquake locations
+window.eqfeed_callback = function(results) {
+  for (var i = 0; i < results.features.length; i++) {
+    var coords = results.features[i].geometry.coordinates;
+    var latLng = new google.maps.LatLng(coords[1],coords[0]);
+    var marker = new google.maps.Marker({
+      position: location,
+      map: this
+  });
+ }
+}
+
+</script>
+<script>
+// The code below displays today's date and the current local time in Australia. 
+var currentDate = new Date();
+document.getElementById("end").innerHTML = "Australia, " + (currentDate.toDateString());
+</script>    
+    
+</body>
+
+
+
+</html>
